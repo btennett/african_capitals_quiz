@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>African Capitals Quiz</title>
+
+<meta name="description" content="12 multiple-choice questions on the capital cities of Africa, drawn from all 54 countries. Every game is different.">
+<meta name="theme-color" content="#1F4E8C">
+
+<!-- Link previews (WhatsApp, iMessage, Facebook, Slack, X…)
+     Set for https://btennett.github.io/world_quiz/  — change og:url and the image addresses
+     if you host this at a new address (e.g. /africa_quiz/).
+     og:image MUST be a full https:// address or WhatsApp won't show it. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="African Capitals Quiz">
+<meta property="og:title" content="African Capitals Quiz">
+<meta property="og:description" content="12 multiple-choice questions on the capital cities of Africa, drawn from all 54 countries. Every game is different.">
+<meta property="og:url" content="https://btennett.github.io/african_capitals_quiz/">
+<meta property="og:image" content="https://btennett.github.io/african_capitals_quiz/preview.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="African Capitals Quiz: a multiple-choice question with five answers, the correct one ticked.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="African Capitals Quiz">
+<meta name="twitter:description" content="12 multiple-choice questions on the capital cities of Africa, drawn from all 54 countries. Every game is different.">
+<meta name="twitter:image" content="https://btennett.github.io/african_capitals_quiz/preview.png">
+
+<!-- Browser tab and home-screen icons -->
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Base rules (previously supplied by the Claude artifact viewer) */
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: one-screen phone app. Header (progress) / scrolling question card / thumb-zone action bar whose button never moves. */
+:root{
+  --bg:#ECEFEA; --surface:#FFFFFF; --ink:#18201B; --muted:#5C665F; --line:#D2D9D2;
+  --accent:#1F4E8C; --good:#1D7448; --bad:#B0281F; --good-soft:#E2F1E8; --bad-soft:#FAE6E3;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-head:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111613; --surface:#1A221D; --ink:#E5ECE6; --muted:#98A49B; --line:#2C3830;
+  --accent:#8DB4F0; --good:#4CC48A; --bad:#F27C70; --good-soft:#163024; --bad-soft:#3A1E1C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111613; --surface:#1A221D; --ink:#E5ECE6; --muted:#98A49B; --line:#2C3830;
+  --accent:#8DB4F0; --good:#4CC48A; --bad:#F27C70; --good-soft:#163024; --bad-soft:#3A1E1C; color-scheme:dark}
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-display);-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit}
+.app{height:100%;max-width:560px;margin:0 auto;display:grid;grid-template-rows:auto 1fr auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+.top{padding-block:14px 10px;display:flex;flex-direction:column;gap:10px}
+.top-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brand{font-weight:800;font-size:1.15rem;letter-spacing:-.01em;margin:0}
+.brand em{font-style:normal;color:var(--accent)}
+.score{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.score b{color:var(--ink);font-size:1rem}
+.dots{display:grid;gap:5px;list-style:none;margin:0;padding:0}
+.dots li{height:6px;border-radius:3px;background:var(--line)}
+.dots li.now{background:var(--accent)} .dots li.ok{background:var(--good)} .dots li.no{background:var(--bad)}
+
+.stage{overflow-y:auto;min-height:0;padding-block:6px 14px;overscroll-behavior:contain}
+.card{display:flex;flex-direction:column;gap:14px}
+.meta{font-family:var(--f-mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.question{font-family:var(--f-head);font-weight:600;font-size:clamp(1.25rem,5.2vw,1.55rem);line-height:1.3;margin:0;text-wrap:balance}
+
+.options{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.opt{width:100%;min-height:52px;display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:12px;
+  text-align:left;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);
+  font-size:1rem;font-weight:500;cursor:pointer;transition:border-color .15s,background .15s,transform .08s}
+.opt:active{transform:scale(.985)}
+.opt:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (hover:hover){.opt:not([disabled]):hover{border-color:var(--accent)}}
+.opt .key{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;font-family:var(--f-mono);font-size:.85rem;
+  background:var(--bg);color:var(--muted)}
+.opt .txt{min-width:0;line-height:1.3}
+.opt .res{font-weight:800;font-size:1.05rem}
+.opt[disabled]{cursor:default}
+.opt.correct{border-color:var(--good);background:var(--good-soft)}
+.opt.correct .key{background:var(--good);color:var(--surface)}
+.opt.correct .res{color:var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .key{background:var(--bad);color:var(--surface)}
+.opt.wrong .res{color:var(--bad)}
+.opt.faded{opacity:.5}
+
+.fact{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.fact .verdict{font-weight:800;font-size:1.05rem;margin:0}
+.fact .verdict.ok{color:var(--good)} .fact .verdict.no{color:var(--bad)}
+.fact p{margin:0;font-family:var(--f-head);font-size:1rem;line-height:1.55}
+
+.over{display:flex;flex-direction:column;gap:16px}
+.final{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px 18px;text-align:center;display:flex;flex-direction:column;gap:6px}
+.final .big{font-weight:800;font-size:3.2rem;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:0}
+.final p{margin:0}
+.final .best{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.review-title{font-size:.8rem;font-family:var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:6px 0 0;font-weight:500}
+.review{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.review li{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px}
+.review .mark{font-weight:800;font-size:1.05rem;line-height:1.3}
+.review .mark.ok{color:var(--good)} .review .mark.no{color:var(--bad)}
+.review .q{font-family:var(--f-head);font-size:.95rem;line-height:1.35;min-width:0}
+.review .ans{grid-column:2;font-size:.85rem;color:var(--muted)}
+.review .ans b{color:var(--ink);font-weight:600}
+
+.actions{padding-block:10px 14px;border-top:1px solid var(--line);background:var(--bg)}
+.btn{width:100%;border:none;border-radius:12px;min-height:58px;font-weight:700;font-size:1.1rem;cursor:pointer;
+  background:var(--accent);color:var(--surface);transition:transform .08s,opacity .15s}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn[disabled]{background:var(--line);color:var(--muted);cursor:default;transform:none}
+.foot{font-family:var(--f-mono);font-size:.68rem;color:var(--muted);text-align:center;margin:8px 0 0}
+.error{background:var(--bad-soft);border:1px solid var(--bad);border-radius:12px;padding:14px 16px;font-size:.92rem}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.fact{animation:rise .25s ease-out}@keyframes rise{from{transform:translateY(6px);opacity:.4}to{transform:none;opacity:1}}}
+</style>
+</head>
+<body>
+<!--
+================================================================
+  QUIZ CONTENT — edit only this block to make a new version.
+  ----------------------------------------------------------------
+  settings.questionsPerGame : how many questions each game draws
+  settings.optionsPerQuestion : choices shown per question (3 to 6; 5 fits best on a phone)
+  countries[] : one object per country (all 54 African UN member states)
+    country : name as it appears in the question
+    capital : the correct answer
+    region  : shown above the question; wrong answers are drawn from
+              other capitals in the same region, so keep spellings consistent
+    fact    : one or two sentences shown after answering (optional)
+  Questions are built automatically: "What is the capital of <country>?"
+  Capitals verified October 2026 (Equatorial Guinea moved its capital
+  to Ciudad de la Paz by decree on 2 January 2026).
+================================================================
+-->
+<script type="application/json" id="quiz-data">
+{
+  "title": "African Capitals Quiz",
+  "version": "1.0 · October 2026",
+  "settings": { "questionsPerGame": 12, "optionsPerQuestion": 5 },
+  "countries": [
+    { "country": "Algeria", "capital": "Algiers", "region": "North Africa",
+      "fact": "Algiers is also Algeria's largest city." },
+    { "country": "Egypt", "capital": "Cairo", "region": "North Africa",
+      "fact": "Cairo is still the capital, though most ministries have moved to the purpose-built 'New Capital' east of the city, inaugurated as the seat of government in 2024." },
+    { "country": "Libya", "capital": "Tripoli", "region": "North Africa",
+      "fact": "Tripoli sits on the Mediterranean coast and is Libya's largest city." },
+    { "country": "Morocco", "capital": "Rabat", "region": "North Africa",
+      "fact": "Casablanca is Morocco's largest city, but Rabat is the capital." },
+    { "country": "Sudan", "capital": "Khartoum", "region": "North Africa",
+      "fact": "Khartoum stands where the Blue Nile and White Nile meet." },
+    { "country": "Tunisia", "capital": "Tunis", "region": "North Africa",
+      "fact": "The ruins of ancient Carthage lie on the outskirts of Tunis." },
+
+    { "country": "Benin", "capital": "Porto-Novo", "region": "West Africa",
+      "fact": "Porto-Novo is the official capital, but most of the government sits in Cotonou." },
+    { "country": "Burkina Faso", "capital": "Ouagadougou", "region": "West Africa",
+      "fact": "Often shortened to 'Ouaga', it hosts FESPACO, Africa's largest film festival." },
+    { "country": "Cabo Verde", "capital": "Praia", "region": "West Africa",
+      "fact": "Praia is on Santiago, the largest island of the archipelago." },
+    { "country": "Côte d'Ivoire (Ivory Coast)", "capital": "Yamoussoukro", "region": "West Africa",
+      "fact": "Yamoussoukro became the official capital in 1983; Abidjan remains the economic centre." },
+    { "country": "The Gambia", "capital": "Banjul", "region": "West Africa",
+      "fact": "Banjul sits on an island at the mouth of the Gambia River." },
+    { "country": "Ghana", "capital": "Accra", "region": "West Africa",
+      "fact": "Accra lies on the Gulf of Guinea coast." },
+    { "country": "Guinea", "capital": "Conakry", "region": "West Africa" },
+    { "country": "Guinea-Bissau", "capital": "Bissau", "region": "West Africa" },
+    { "country": "Liberia", "capital": "Monrovia", "region": "West Africa",
+      "fact": "It is named after US President James Monroe." },
+    { "country": "Mali", "capital": "Bamako", "region": "West Africa",
+      "fact": "Bamako lies on the Niger River." },
+    { "country": "Mauritania", "capital": "Nouakchott", "region": "West Africa",
+      "fact": "Nouakchott was built up as the capital around independence in 1960." },
+    { "country": "Niger", "capital": "Niamey", "region": "West Africa",
+      "fact": "Niamey lies on the Niger River, which gives the country its name." },
+    { "country": "Nigeria", "capital": "Abuja", "region": "West Africa",
+      "fact": "Abuja replaced Lagos as the capital in 1991." },
+    { "country": "Senegal", "capital": "Dakar", "region": "West Africa",
+      "fact": "Dakar is on the Cap-Vert peninsula, the westernmost point of mainland Africa." },
+    { "country": "Sierra Leone", "capital": "Freetown", "region": "West Africa",
+      "fact": "Freetown was founded in 1792 as a settlement for freed slaves." },
+    { "country": "Togo", "capital": "Lomé", "region": "West Africa" },
+
+    { "country": "Burundi", "capital": "Gitega", "region": "Central Africa",
+      "fact": "Gitega became the political capital in 2019; Bujumbura remains the economic capital." },
+    { "country": "Cameroon", "capital": "Yaoundé", "region": "Central Africa",
+      "fact": "Douala is Cameroon's largest city and main port, but Yaoundé is the capital." },
+    { "country": "Central African Republic", "capital": "Bangui", "region": "Central Africa",
+      "fact": "Bangui lies on the Ubangi River." },
+    { "country": "Chad", "capital": "N'Djamena", "region": "Central Africa",
+      "fact": "It was called Fort-Lamy until 1973." },
+    { "country": "Republic of the Congo", "capital": "Brazzaville", "region": "Central Africa",
+      "fact": "Brazzaville and Kinshasa face each other across the Congo River." },
+    { "country": "Democratic Republic of the Congo", "capital": "Kinshasa", "region": "Central Africa",
+      "fact": "Formerly Léopoldville, it faces Brazzaville across the Congo River." },
+    { "country": "Equatorial Guinea", "capital": "Ciudad de la Paz", "region": "Central Africa",
+      "fact": "A decree on 2 January 2026 moved the capital from Malabo, on Bioko Island, to this planned city on the mainland." },
+    { "country": "Gabon", "capital": "Libreville", "region": "Central Africa" },
+    { "country": "São Tomé and Príncipe", "capital": "São Tomé", "region": "Central Africa",
+      "fact": "The capital shares its name with the country's larger island." },
+
+    { "country": "Comoros", "capital": "Moroni", "region": "East Africa",
+      "fact": "Moroni is on Grande Comore, the largest island." },
+    { "country": "Djibouti", "capital": "Djibouti", "region": "East Africa",
+      "fact": "The capital shares its name with the country." },
+    { "country": "Eritrea", "capital": "Asmara", "region": "East Africa",
+      "fact": "Its modernist architecture made Asmara a UNESCO World Heritage Site in 2017." },
+    { "country": "Ethiopia", "capital": "Addis Ababa", "region": "East Africa",
+      "fact": "Addis Ababa is home to the headquarters of the African Union." },
+    { "country": "Kenya", "capital": "Nairobi", "region": "East Africa",
+      "fact": "Nairobi hosts the headquarters of the UN Environment Programme." },
+    { "country": "Madagascar", "capital": "Antananarivo", "region": "East Africa",
+      "fact": "It is often shortened to 'Tana'." },
+    { "country": "Mauritius", "capital": "Port Louis", "region": "East Africa" },
+    { "country": "Rwanda", "capital": "Kigali", "region": "East Africa" },
+    { "country": "Seychelles", "capital": "Victoria", "region": "East Africa",
+      "fact": "Victoria, on the island of Mahé, is one of the world's smallest capitals." },
+    { "country": "Somalia", "capital": "Mogadishu", "region": "East Africa" },
+    { "country": "South Sudan", "capital": "Juba", "region": "East Africa",
+      "fact": "South Sudan became independent in 2011, making it Africa's newest country." },
+    { "country": "Tanzania", "capital": "Dodoma", "region": "East Africa",
+      "fact": "Dodoma is the official capital; Dar es Salaam is the largest city." },
+    { "country": "Uganda", "capital": "Kampala", "region": "East Africa" },
+
+    { "country": "Angola", "capital": "Luanda", "region": "Southern Africa" },
+    { "country": "Botswana", "capital": "Gaborone", "region": "Southern Africa" },
+    { "country": "Eswatini (Swaziland)", "capital": "Mbabane", "region": "Southern Africa",
+      "fact": "Mbabane is the administrative capital; Lobamba is the royal and legislative capital." },
+    { "country": "Lesotho", "capital": "Maseru", "region": "Southern Africa",
+      "fact": "Lesotho is entirely surrounded by South Africa." },
+    { "country": "Malawi", "capital": "Lilongwe", "region": "Southern Africa",
+      "fact": "Lilongwe replaced Zomba as the capital in 1975." },
+    { "country": "Mozambique", "capital": "Maputo", "region": "Southern Africa",
+      "fact": "It was called Lourenço Marques until 1976." },
+    { "country": "Namibia", "capital": "Windhoek", "region": "Southern Africa" },
+    { "country": "South Africa", "capital": "Pretoria", "region": "Southern Africa",
+      "fact": "South Africa has three capitals: Pretoria (executive), Cape Town (legislative) and Bloemfontein (judicial)." },
+    { "country": "Zambia", "capital": "Lusaka", "region": "Southern Africa" },
+    { "country": "Zimbabwe", "capital": "Harare", "region": "Southern Africa",
+      "fact": "It was called Salisbury until 1982." }
+  ]
+}
+</script>
+
+<div class="app">
+  <header class="top">
+    <div class="top-row">
+      <h1 class="brand"><em>African Capitals</em> Quiz</h1>
+      <div class="score" id="scoreBox"></div>
+    </div>
+    <ol class="dots" id="dots" aria-hidden="true"></ol>
+  </header>
+
+  <main class="stage" id="stage">
+    <section class="card" id="play">
+      <div class="meta" id="cat"></div>
+      <h2 class="question" id="question"></h2>
+      <ol class="options" id="options"></ol>
+      <div class="fact" id="fact" hidden>
+        <p class="verdict" id="verdict"></p>
+        <p id="factText"></p>
+      </div>
+    </section>
+
+    <section class="over" id="over" hidden>
+      <div class="final">
+        <p class="big" id="finalScore"></p>
+        <p id="finalMsg"></p>
+        <p class="best" id="best"></p>
+      </div>
+      <h2 class="review-title">Your answers</h2>
+      <ol class="review" id="review"></ol>
+    </section>
+  </main>
+
+  <footer class="actions">
+    <button class="btn" id="mainBtn" type="button" disabled>Pick an answer</button>
+    <p class="foot" id="foot"></p>
+  </footer>
+  <div class="sr" aria-live="polite" id="live"></div>
+</div>
+
+<script>
+// ---------- Load and check the content ----------
+const $ = id => document.getElementById(id);
+const KEYS = "ABCDEF";
+let DATA, COUNTRIES = [], PER = 12, NOPT = 5;
+const shuffle = a => { a = [...a]; for (let k = a.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [a[k], a[j]] = [a[j], a[k]]; } return a; };
+
+try {
+  DATA = JSON.parse($("quiz-data").textContent);
+  PER = Math.max(1, +(DATA.settings && DATA.settings.questionsPerGame) || 12);
+  NOPT = Math.min(6, Math.max(3, +(DATA.settings && DATA.settings.optionsPerQuestion) || 5));
+  (DATA.countries || []).forEach((c, n) => {
+    if (!c.country || !c.capital) console.warn(`Country ${n + 1} skipped: missing country or capital.`);
+    else COUNTRIES.push(c);
+  });
+} catch (e) {
+  console.error(e);
+}
+
+// Build a question with wrong answers taken from other capitals,
+// preferring the same region so the choices are plausible.
+function makeQuestion(c) {
+  const others = COUNTRIES.filter(o => o.capital !== c.capital);
+  const same = shuffle(others.filter(o => o.region === c.region).map(o => o.capital));
+  const rest = shuffle(others.filter(o => o.region !== c.region).map(o => o.capital));
+  const wrong = [...new Set([...same, ...rest])].slice(0, NOPT - 1);
+  return { category: c.region || "Africa", q: `What is the capital of ${c.country}?`,
+           answer: c.capital, options: [c.capital, ...wrong], fact: c.fact };
+}
+
+// ---------- Game ----------
+let round = [], i = 0, score = 0, answers = [], picked = false;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function buzz(p) { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} }
+const total = () => round.length;
+
+function header() {
+  const done = !$("over").hidden;
+  $("scoreBox").innerHTML = done ? `Done · Score <b>${score}</b>`
+    : `Q <b>${Math.min(i + 1, total())}</b>/${total()} · Score <b>${score}</b>`;
+  $("dots").style.gridTemplateColumns = `repeat(${total()},1fr)`;
+  $("dots").innerHTML = round.map((_, k) => {
+    const c = k < answers.length ? (answers[k].ok ? "ok" : "no") : (k === i && !done ? "now" : "");
+    return `<li class="${c}"></li>`;
+  }).join("");
+}
+
+function show() {
+  const x = round[i];
+  picked = false;
+  x._order = shuffle(x.options);
+  $("cat").textContent = x.category || "Africa";
+  $("question").textContent = x.q;
+  $("options").innerHTML = x._order.map((o, k) =>
+    `<li><button class="opt" type="button" id="opt-${k}" data-v="${esc(o)}"><span class="key">${KEYS[k]}</span><span class="txt">${esc(o)}</span><span class="res" aria-hidden="true"></span></button></li>`
+  ).join("");
+  $("fact").hidden = true;
+  const b = $("mainBtn"); b.disabled = true; b.textContent = "Pick an answer";
+  $("stage").scrollTop = 0;
+  header();
+}
+
+function choose(value) {
+  if (picked) return;
+  picked = true;
+  const x = round[i], ok = value === x.answer;
+  if (ok) score++;
+  answers.push({ x, value, ok });
+  buzz(ok ? 20 : [30, 40, 30]);
+
+  document.querySelectorAll(".opt").forEach(btn => {
+    const v = btn.dataset.v; btn.disabled = true;
+    if (v === x.answer) { btn.classList.add("correct"); btn.querySelector(".res").textContent = "✓"; }
+    else if (v === value) { btn.classList.add("wrong"); btn.querySelector(".res").textContent = "✗"; }
+    else btn.classList.add("faded");
+  });
+
+  const vd = $("verdict");
+  vd.textContent = ok ? "Correct!" : `Not quite. It's ${x.answer}.`;
+  vd.className = "verdict " + (ok ? "ok" : "no");
+  $("factText").textContent = x.fact || "";
+  $("factText").hidden = !x.fact;
+  $("fact").hidden = false;
+  $("live").textContent = vd.textContent + " " + (x.fact || "");
+
+  const b = $("mainBtn");
+  b.disabled = false;
+  b.textContent = i === total() - 1 ? "See your results →" : "Next question →";
+  b.focus({ preventScroll: true });
+  header();
+  requestAnimationFrame(() => $("fact").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" }));
+}
+
+function finish() {
+  $("play").hidden = true; $("over").hidden = false;
+  const n = total(), pct = score / n;
+  $("finalScore").textContent = `${score}/${n}`;
+  $("finalMsg").textContent = pct >= .9 ? "Outstanding. You know your way around Africa." : pct >= .7 ? "Great result. A seasoned traveller." : pct >= .5 ? "Solid effort. Have another go." : "A tough set. Every round is different, so try again.";
+  let best = score;
+  try { const key = "africa-capitals-best-" + (DATA.version || "1"); best = Math.max(score, +(localStorage.getItem(key) || 0)); localStorage.setItem(key, best); } catch (e) {}
+  $("best").textContent = `Best score on this device: ${best}/${n}`;
+  $("review").innerHTML = answers.map(a =>
+    `<li><span class="mark ${a.ok ? "ok" : "no"}" aria-label="${a.ok ? "correct" : "wrong"}">${a.ok ? "✓" : "✗"}</span><span class="q">${esc(a.x.q)}</span>
+     <span class="ans">${a.ok ? `<b>${esc(a.x.answer)}</b>` : `You said ${esc(a.value)} · answer: <b>${esc(a.x.answer)}</b>`}</span></li>`
+  ).join("");
+  const b = $("mainBtn"); b.disabled = false; b.textContent = "Play again ↻"; b.focus({ preventScroll: true });
+  $("stage").scrollTop = 0;
+  header();
+}
+
+function start() {
+  round = shuffle(COUNTRIES).slice(0, Math.min(PER, COUNTRIES.length)).map(makeQuestion);
+  i = 0; score = 0; answers = [];
+  $("over").hidden = true; $("play").hidden = false;
+  show();
+}
+
+$("options").addEventListener("click", e => { const b = e.target.closest(".opt"); if (b) choose(b.dataset.v); });
+$("mainBtn").addEventListener("click", () => {
+  if (!$("over").hidden) start();
+  else if (picked) { if (i < total() - 1) { i++; show(); } else finish(); }
+});
+document.addEventListener("keydown", e => {
+  if (e.target.tagName === "A") return;
+  const k = e.key.toUpperCase(), idx = KEYS.indexOf(k);
+  if (!picked && $("over").hidden && idx > -1 && idx < (round[i]?._order.length || 0) && k.length === 1) { e.preventDefault(); choose(round[i]._order[idx]); }
+  else if (e.key === "Enter" && !$("mainBtn").disabled && document.activeElement !== $("mainBtn")) { e.preventDefault(); $("mainBtn").click(); }
+});
+
+if (COUNTRIES.length >= 5) {
+  $("foot").textContent = `${COUNTRIES.length} countries · version ${DATA.version || "1"}`;
+  start();
+} else {
+  $("play").innerHTML = `<div class="error">The quiz content couldn't be loaded. Check the quiz-data block for a JSON typo, such as a missing comma or quote.</div>`;
+  $("mainBtn").textContent = "No questions loaded";
+}
+</script>
+</body>
+</html>
